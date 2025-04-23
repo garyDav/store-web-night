@@ -16,7 +16,7 @@ export const productSlice = createSlice({
     activeProduct: null,
   },
   reducers: {
-    onSetAvtiveProduct: (state, { payload }) => {
+    onSetActiveProduct: (state, { payload }) => {
       state.activeProduct = payload
     },
     onAddNewProduct: (state, { payload }) => {
@@ -26,4 +26,4 @@ export const productSlice = createSlice({
   },
 })
 
-export const { onSetAvtiveProduct, onAddNewProduct } = productSlice.actions
+export const { onSetActiveProduct, onAddNewProduct } = productSlice.actions

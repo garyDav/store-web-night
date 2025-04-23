@@ -35,11 +35,23 @@ export const useForm = (initialState = {}, formValidations = {}) => {
     const formCheckedValues = {}
 
     for (const formField of Object.keys(formValidations)) {
+      // { key: value, key: value }
       const [fn, errorMessage] = formValidations[formField]
-
-      formCheckedValues[`${formField}Valid`] = fn(formValues[formField])
-        ? null
-        : errorMessage
+      if (Array.isArray(fn)) {
+        formCheckedValues[`${formField}Valid`] = []
+        for (const [fn, errorMessage] of formValidations[formField]) {
+          if (!fn(formValues[formField])) {
+            formCheckedValues[`${formField}Valid`].push(errorMessage)
+          }
+        }
+        if (formCheckedValues[`${formField}Valid`].length === 0) {
+          formCheckedValues[`${formField}Valid`] = null
+        }
+      } else {
+        formCheckedValues[`${formField}Valid`] = fn(formValues[formField])
+          ? null
+          : errorMessage
+      }
     }
 
     setFormValidation(formCheckedValues)

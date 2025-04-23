@@ -1,8 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit'
 
-// import { counterSlice } from './counter/counterSlice'
-import { productSlice } from './product'
-import { uiSlice } from './ui'
+import { uiSlice, productSlice } from './'
 
 export const store = configureStore({
   reducer: {
@@ -10,4 +8,8 @@ export const store = configureStore({
     product: productSlice.reducer,
     ui: uiSlice.reducer,
   },
+  middleware: getDefaultMiddleware =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 })

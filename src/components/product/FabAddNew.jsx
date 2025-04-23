@@ -1,10 +1,13 @@
-// import { useUiStore, useProductStore } from '../hooks'
+import { useUiStore } from '../../hooks'
 
 export const FabAddNew = () => {
-  // const { openProductModal } = useUiStore()
+  const { openProductModal } = useUiStore()
   // const { setActiveProduct } = useProductStore()
 
-  const handleClickNew = () => {}
+  const handleClickNew = () => {
+    console.log('Hizo click')
+    openProductModal()
+  }
 
   return (
     <button className="btn btn-primary fab" onClick={handleClickNew}>

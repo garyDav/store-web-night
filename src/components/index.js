@@ -1,2 +1,3 @@
 export * from './Navbar'
-export * from './FabAddNew'
+export * from './product/FabAddNew'
+export * from './product/ProductModal'

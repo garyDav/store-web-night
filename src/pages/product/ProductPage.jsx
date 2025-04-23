@@ -1,4 +1,4 @@
-import { Navbar, FabAddNew } from '../../components'
+import { Navbar, FabAddNew, ProductModal } from '../../components'
 
 function ProductPage() {
   return (
@@ -37,6 +37,7 @@ function ProductPage() {
         </div>
       </div>
 
+      <ProductModal />
       <FabAddNew />
     </>
   )

@@ -1,5 +1,5 @@
-import { useDispatch } from 'react-redux'
-import { onSetActiveProduct } from '../store/product'
+import { useDispatch, useSelector } from 'react-redux'
+import { onSetActiveProduct } from '../store'
 
 export const useProductStore = () => {
   // Variables Locales
