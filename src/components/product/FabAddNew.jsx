@@ -5,7 +5,6 @@ export const FabAddNew = () => {
   // const { setActiveProduct } = useProductStore()
 
   const handleClickNew = () => {
-    console.log('Hizo click')
     openProductModal()
   }
 

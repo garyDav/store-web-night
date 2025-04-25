@@ -1,10 +1,12 @@
 import { useState, useMemo } from 'react'
 import Modal from 'react-modal'
-import { useForm, useUiStore } from '../../hooks'
+import { useForm, useProductStore, useUiStore } from '../../hooks'
 import DatePicker, { registerLocale } from 'react-datepicker'
 import { es } from 'date-fns/locale'
-import { addDays } from 'date-fns'
+import { WithContext as ReactTags, SEPARATORS } from 'react-tag-input'
+import { addDays, differenceInSeconds, subDays } from 'date-fns'
 import 'react-datepicker/dist/react-datepicker.css'
+import Swal from 'sweetalert2'
 
 registerLocale('es', es)
 
@@ -48,6 +50,7 @@ const productValidations = {
 export const ProductModal = () => {
   // Custom Hooks
   const { isProductModalOpen, closeProductModal } = useUiStore()
+  const { startSavingProduct } = useProductStore()
   const {
     name,
     product_date,
@@ -68,6 +71,7 @@ export const ProductModal = () => {
   const [formSubmitted, setFormSubmitted] = useState(false)
   const [tags, setTags] = useState([])
 
+  // Métodos para Class CSS en caso de error
   const nameClass = useMemo(() => {
     if (!formSubmitted) return ''
 
@@ -86,19 +90,69 @@ export const ProductModal = () => {
     return !priceValid ? '' : 'is-invalid'
   }, [formSubmitted, priceValid])
 
+  // Método para cambiar la fecha (datepicker)
   const onDateChange = (value, changing) => {
     onInputChange({ target: { name: changing, value } })
   }
 
+  // Método cierra el modal resetear el formulario
   const onCloseModal = () => {
     closeProductModal()
+    onResetForm()
+    setFormSubmitted(false)
+    onClearAll()
   }
 
-  const onSubmit = event => {
+  // Método con mas importancia (Guardar)
+  const onSubmit = async event => {
+    // TODO: evitar el full refresh
     event.preventDefault()
-
+    // TODO: ejecutamos el botón "guardar"
     setFormSubmitted(true)
-    console.log('Formulario completado')
+
+    // TODO: Validar las fechas
+    const difference = differenceInSeconds(expiration_date, product_date)
+    if (isNaN(difference) || difference <= 0) {
+      Swal.fire('Formulario Inválido', 'Revisa las fechas', 'error')
+      return
+    }
+    // TODO: Validar los campos del formulario
+    if (!isFormValid) {
+      Swal.fire('Formulario Inválido', 'Revisa el formulario', 'error')
+      return
+    }
+
+    // TODO: customHook para realizar la petición HTTP
+    const data = { ...formValues, tags: tags.map(({ text }) => text) }
+    await startSavingProduct(data)
+    onCloseModal()
+  }
+
+  const handleDelete = index => {
+    setTags(tags.filter((_, i) => i !== index))
+  }
+  const onTagUpdate = (index, newTag) => {
+    const updatedTags = [...tags]
+    updatedTags.splice(index, 1, newTag)
+    setTags(updatedTags)
+  }
+  const handleAddition = tag => {
+    setTags(prevTags => {
+      return [...prevTags, tag]
+    })
+  }
+  const handleDrag = (tag, currPos, newPos) => {
+    const newTags = tags.slice()
+
+    newTags.splice(currPos, 1)
+    newTags.splice(newPos, 0, tag)
+
+    // re-render
+    setTags(newTags)
+  }
+
+  const onClearAll = () => {
+    setTags([])
   }
 
   return (
@@ -116,6 +170,7 @@ export const ProductModal = () => {
         <div className="form-group mb-2">
           <label>Fecha de compra </label>
           <DatePicker
+            minDate={subDays(today, 10)}
             selected={product_date}
             onChange={value => onDateChange(value, 'product_date')}
             className="form-control"
@@ -129,6 +184,7 @@ export const ProductModal = () => {
         <div className="form-group mb-2">
           <label>Fecha de expiración </label>
           <DatePicker
+            minDate={addDays(new Date(), 20)}
             selected={expiration_date}
             onChange={value => onDateChange(value, 'expiration_date')}
             className="form-control"
@@ -186,6 +242,21 @@ export const ProductModal = () => {
 
         <div className="form-group mb-2">
           <label>Características</label>
+          <ReactTags
+            tags={tags}
+            placeholder="Etiquetas del producto"
+            separators={[SEPARATORS.TAB, SEPARATORS.ENTER, SEPARATORS.COMMA]}
+            handleDelete={handleDelete}
+            handleAddition={handleAddition}
+            handleDrag={handleDrag}
+            onTagUpdate={onTagUpdate}
+            inputFieldPosition="inline"
+            inline
+            editable
+            clearAll
+            onClearAll={onClearAll}
+            maxTags={7}
+          />
         </div>
 
         <button type="submit" className="btn btn-outline-primary btn-block">

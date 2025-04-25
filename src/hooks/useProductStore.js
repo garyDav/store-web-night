@@ -1,5 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { onSetActiveProduct } from '../store'
+import Swal from 'sweetalert2'
+
+import { onAddNewProduct, onSetActiveProduct } from '../store'
 
 export const useProductStore = () => {
   // Variables Locales
@@ -18,7 +20,15 @@ export const useProductStore = () => {
     } else {
       // Crear en la BBDD (Create)
       // TODO: llega al backend HTTP
+      dispatch(onAddNewProduct({ ...product, _id: new Date().getTime() }))
       console.log('New Product')
+      Swal.fire({
+        position: 'top',
+        icon: 'success',
+        title: 'Producto Guardado',
+        showConfirmButton: false,
+        timer: 1500,
+      })
     }
   }
 

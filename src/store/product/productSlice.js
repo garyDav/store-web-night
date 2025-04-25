@@ -1,12 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { addDays } from 'date-fns'
 
 const tempProduct = {
-  name: 'Durazno',
+  _id: new Date().getTime(),
+  name: 'Leche Bolsa',
   product_date: new Date(),
-  expiration_date: new Date('2025-04-30T00:00:00.000Z'),
-  stock: 200,
-  price: 1,
-  tags: ['fruta', 'oferta'],
+  expiration_date: addDays(new Date(), 20),
+  stock: 100,
+  price: 7,
+  tags: ['bebida', 'lacteo', 'natural', 'refrigerado'],
 }
 
 export const productSlice = createSlice({
